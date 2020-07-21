@@ -9,11 +9,12 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 use Hyperf\Server\Server;
 use Hyperf\Server\SwooleEvent;
 
 return [
-    'mode' => SWOOLE_BASE,
+    'mode' => SWOOLE_PROCESS,
     'servers' => [
         [
             'name' => 'http',
