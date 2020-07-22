@@ -13,19 +13,23 @@ namespace App\Controller;
 
 use App\Kernel\Http\Response;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Logger\LoggerFactory;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 abstract class Controller
 {
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    protected ContainerInterface $container;
 
     /**
      * @var Response
      */
     protected $response;
+
+    protected LoggerInterface $logger;
 
     /**
      * @var RequestInterface
@@ -37,5 +41,6 @@ abstract class Controller
         $this->container = $container;
         $this->response = $container->get(Response::class);
         $this->request = $container->get(RequestInterface::class);
+        $this->logger = $container->get(LoggerFactory::class)->get();
     }
 }

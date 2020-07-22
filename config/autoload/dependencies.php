@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
 /**
  * This file is part of Hyperf.
  *
@@ -9,6 +10,10 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
+use App\Factory\MiniProgramFactory;
+use EasyWeChat\MiniProgram\Application;
+
 return [
     // Hyperf\Contract\StdoutLoggerInterface::class => App\Kernel\Log\LoggerFactory::class,
     // Hyperf\Server\Listener\AfterWorkerStartListener::class => App\Kernel\Http\WorkerStartListener::class,
