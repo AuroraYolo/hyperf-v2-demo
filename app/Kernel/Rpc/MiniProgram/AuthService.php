@@ -6,10 +6,7 @@ namespace App\Kernel\Rpc\MiniProgram;
 use App\Exception\RuntimeException;
 use App\Kernel\MiniProgram\MiniProgramFactory;
 use App\Kernel\Rpc\MiniProgram\Contract\AuthInterface;
-use Hyperf\Logger\LoggerFactory;
 use Hyperf\RpcServer\Annotation\RpcService;
-use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class AuthService
@@ -18,17 +15,9 @@ use Psr\Log\LoggerInterface;
  */
 class AuthService extends BaseService implements AuthInterface
 {
-    protected ContainerInterface $container;
-
-    protected LoggerInterface $logger;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-        $this->logger    = $container->get(LoggerFactory::class)->get('easywechat', 'miniprogram');
-    }
-
     /**
+     * #小程序登录
+     *
      * @param string $channel
      * @param string $code
      *
@@ -38,9 +27,13 @@ class AuthService extends BaseService implements AuthInterface
     {
         $session = NULL;
         try {
-            $session = $this->container->get(MiniProgramFactory::class)->get($channel)->auth->session($code);
+            //TODO 尚未测试
+            $session = retry(1, function () use ($channel, $code)
+            {
+                return $this->container->get(MiniProgramFactory::class)->get($channel)->auth->session($code);
+            }, 20);
             if (!is_array($session) || !isset($session['openid'])) {
-                throw new RuntimeException($session['errmsg'],$session['errcode']);
+                throw new RuntimeException($session['errmsg'], $session['errcode']);
             }
         } catch (\Throwable $exception) {
             $this->logger->error(sprintf(">>>>> EasyWechat:获取小程序通道[%s] Code[%s]授权发生错误, \r\n
@@ -51,6 +44,36 @@ class AuthService extends BaseService implements AuthInterface
         }
         finally {
             return $this->send($session);
+        }
+    }
+
+    /**
+     * #解密用户手机号
+     *
+     * @param string $channel
+     * @param string $sessionKey
+     * @param string $iv
+     * @param string $encrypted
+     *
+     * @return array
+     */
+    public function decryptData(string $channel, string $sessionKey, string $iv, string $encrypted) : array
+    {
+        $decryptData = NULL;
+        try {
+            $decryptData = $this->container->get(MiniProgramFactory::class)->get($channel)->encryptor->decryptData($sessionKey, $iv, $encrypted);
+        } catch (\Throwable $throwable) {
+            $this->logger->error(sprintf("
+            >>>>> 
+            EasyWechat:获取小程序通道[%s] {sessionkey}[%s] {iv}[%s] {encrypted}[%s]手机号发生错误, \r\n
+            错误消息:{{%s}} \r\n
+            错误行号:{{%s}} \r\n
+            错误文件:{{%s}} 
+            <<<<<
+            ", $channel, $sessionKey, $iv, $encrypted, $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
+        }
+        finally {
+            return $this->send($decryptData);
         }
     }
 }

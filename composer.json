@@ -41,6 +41,7 @@
     "hyperf/pool": "2.0.*",
     "hyperf/process": "2.0.*",
     "hyperf/redis": "2.0.*",
+    "hyperf/retry": "^2.0",
     "hyperf/rpc-client": "^2.0",
     "hyperf/rpc-server": "^2.0",
     "hyperf/server": "2.0.*",
