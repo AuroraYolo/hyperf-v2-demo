@@ -33,7 +33,8 @@ class IndexController extends Controller
         ($this->container->get(MiniProgramFactory::class)->get($channel)->auth->session(('asdsadsadnjasnd')));
     }
 
-    public function log(){
+    public function log()
+    {
         $this->logger->info('11111111');
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Kernel\Rpc\MiniProgram;
 
+use App\Exception\RuntimeException;
 use App\Kernel\MiniProgram\MiniProgramFactory;
 use App\Kernel\Rpc\MiniProgram\Contract\AuthInterface;
 use Hyperf\Logger\LoggerFactory;
@@ -35,16 +36,17 @@ class AuthService extends BaseService implements AuthInterface
      */
     public function session(string $channel, string $code)
     {
-
         $session = NULL;
         try {
             $session = $this->container->get(MiniProgramFactory::class)->get($channel)->auth->session($code);
+            if (!is_array($session) || !isset($session['openid'])) {
+                throw new RuntimeException($session['errmsg'],$session['errcode']);
+            }
         } catch (\Throwable $exception) {
-            $this->logger->error(sprintf("
-            EasyWechat:获取小程序通道[%s] Code[%s]授权发生错误, \n
-            {{%s}} \n
-            {{%s}} \n
-            {{%s}} \n
+            $this->logger->error(sprintf(">>>>> EasyWechat:获取小程序通道[%s] Code[%s]授权发生错误, \r\n
+            错误消息:{{%s}} \r\n
+            错误行号:{{%s}} \r\n
+            错误文件:{{%s}} <<<<<
             ", $channel, $code, $exception->getMessage(), $exception->getLine(), $exception->getFile()));
         }
         finally {

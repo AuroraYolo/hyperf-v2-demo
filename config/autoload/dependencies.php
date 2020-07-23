@@ -11,10 +11,11 @@ declare(strict_types = 1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-use App\Factory\MiniProgramFactory;
-use EasyWeChat\MiniProgram\Application;
+use Hyperf\JsonRpc\JsonRpcPoolTransporter;
+use Hyperf\JsonRpc\JsonRpcTransporter;
 
 return [
     // Hyperf\Contract\StdoutLoggerInterface::class => App\Kernel\Log\LoggerFactory::class,
     // Hyperf\Server\Listener\AfterWorkerStartListener::class => App\Kernel\Http\WorkerStartListener::class,
+    JsonRpcTransporter::class => JsonRpcPoolTransporter::class,
 ];

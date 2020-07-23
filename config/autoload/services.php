@@ -42,7 +42,7 @@ return [
                 // 当使用 JsonRpcPoolTransporter 时会用到以下配置
                 'pool'            => [
                     'min_connections' => 1,
-                    'max_connections' => 32,
+                    'max_connections' => 50,
                     'connect_timeout' => 10.0,
                     'wait_timeout'    => 3.0,
                     'heartbeat'       => -1,
