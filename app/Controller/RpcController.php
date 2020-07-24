@@ -11,7 +11,7 @@ class RpcController extends Controller
      */
     public function session()
     {
-        $channel = $this->request->input('channel');
+        $channel = $this->request->input('channel','default');
         $code    = $this->request->input('code');
         $client  = $this->container->get(AuthInterface::class);
         $value   = $client->session($channel, $code);
