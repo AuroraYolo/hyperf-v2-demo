@@ -3,24 +3,40 @@ declare(strict_types = 1);
 
 namespace App\Kernel\Rpc\MiniProgram;
 
+use App\Helper\StringHelper;
 use App\Kernel\MiniProgram\MiniProgramFactory;
+use EasyWeChat\Kernel\Http\StreamResponse;
+use Hyperf\RpcServer\Annotation\RpcService;
 use Hyperf\Utils\Codec\Json;
+use App\Kernel\Rpc\MiniProgram\Contract\QrCodeInterface;
+use Throwable;
 
-class QrCodeService extends BaseService implements Contract\QrCodeInterface
+/**
+ * Class QrCodeService
+ * @package App\Kernel\Rpc\MiniProgram
+ * @RpcService(name="QrCodeService",protocol="jsonrpc-tcp-length-check",server="jsonrpc",publishTo="consul")
+ */
+class QrCodeService extends BaseService implements QrCodeInterface
 {
-
     /**
      * @inheritDoc
      */
-    public function get(string $channel, string $path, array $optional = [])
+    public function get(string $channel, string $path, array $optional = [], string $fileName = '')
     {
-        $response = NULL;
+        $fileName = NULL;
         try {
             $response = retry($this->maxAttempts, function () use ($channel, $path, $optional)
             {
                 return $this->container->get(MiniProgramFactory::class)->get($channel)->app_code->get($path, $optional);
             }, $this->sleep);
-        } catch (\Throwable $throwable) {
+            if ($response instanceof StreamResponse) {
+                if ($fileName !== '' && $fileName !== NULL) {
+                    $fileName = $response->save($this->qrCodePath, (string)$fileName);
+                } else {
+                    $fileName = $response->save($this->qrCodePath, StringHelper::randString(10, 0));
+                }
+            }
+        } catch (Throwable $throwable) {
             $this->logger->error(sprintf("
             >>>>> 
             EasyWechat:小程序通道[%s] {path}[%s] {optional}[%s] 获取小程序码(数量较少)发生错误,
@@ -31,22 +47,29 @@ class QrCodeService extends BaseService implements Contract\QrCodeInterface
             ", $channel, $path, Json::encode($optional), $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
         }
         finally {
-            return $this->send($response);
+            return $this->send($fileName);
         }
     }
 
     /**
      * @inheritDoc
      */
-    public function getUnlimit(string $channel, string $scene, array $optional = [])
+    public function getUnlimit(string $channel, string $scene, array $optional = [], string $fileName = '')
     {
-        $response = NULL;
+        $fileName = NULL;
         try {
             $response = retry($this->maxAttempts, function () use ($channel, $scene, $optional)
             {
                 return $this->container->get(MiniProgramFactory::class)->get($channel)->app_code->getUnlimit($scene, $optional);
             }, $this->sleep);
-        } catch (\Throwable $throwable) {
+            if ($response instanceof StreamResponse) {
+                if ($fileName !== '' && $fileName !== NULL) {
+                    $fileName = $response->save($this->qrCodePath, (string)$fileName);
+                } else {
+                    $fileName = $response->save($this->qrCodePath, StringHelper::randString(10, 0));
+                }
+            }
+        } catch (Throwable $throwable) {
             $this->logger->error(sprintf("
             >>>>> 
             EasyWechat:小程序通道[%s] {scene}[%s] {optional}[%s] 获取小程序码(数量较多)发生错误,
@@ -57,22 +80,29 @@ class QrCodeService extends BaseService implements Contract\QrCodeInterface
             ", $channel, $scene, Json::encode($optional), $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
         }
         finally {
-            return $this->send($response);
+            return $this->send($fileName);
         }
     }
 
     /**
      * @inheritDoc
      */
-    public function getQrCode(string $channel, string $path, int $width = NULL)
+    public function getQrCode(string $channel, string $path, int $width = NULL, string $fileName = '')
     {
-        $response = NULL;
+        $fileName = NULL;
         try {
             $response = retry($this->maxAttempts, function () use ($channel, $path, $width)
             {
                 return $this->container->get(MiniProgramFactory::class)->get($channel)->app_code->getQrCode($path, $width);
             }, $this->sleep);
-        } catch (\Throwable $throwable) {
+            if ($response instanceof StreamResponse) {
+                if ($fileName !== '' && $fileName !== NULL) {
+                    $fileName = $response->save($this->qrCodePath, (string)$fileName);
+                } else {
+                    $fileName = $response->save($this->qrCodePath, StringHelper::randString(10, 0));
+                }
+            }
+        } catch (Throwable $throwable) {
             $this->logger->error(sprintf("
             >>>>> 
             EasyWechat:小程序通道[%s] {path}[%s] {width}[%s] 获取小程序码发生错误,
@@ -83,7 +113,7 @@ class QrCodeService extends BaseService implements Contract\QrCodeInterface
             ", $channel, $path, $width, $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
         }
         finally {
-            return $this->send($response);
+            return $this->send($fileName);
         }
     }
 }

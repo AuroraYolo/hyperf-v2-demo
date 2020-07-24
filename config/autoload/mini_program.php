@@ -8,6 +8,8 @@ return [
     'key'         => env('WECHAT_QUERY_KEY', 'channel'),
     //服务重试次数
     'maxattempts' => 2,
+    //存储二维码文件路径
+    'qrcode_path' => BASE_PATH . '/storage/',
     //重试间隔
     'sleep'       => 20,
     'config'      => [

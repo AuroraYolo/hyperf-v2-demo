@@ -29,12 +29,18 @@ abstract class BaseService
      */
     protected int $sleep;
 
+    /**
+     * @var string
+     */
+    protected string $qrCodePath;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container   = $container;
         $this->logger      = $container->get(LoggerFactory::class)->get('easywechat', 'miniprogram');
         $this->maxAttempts = config('mini_program.maxattempts');
         $this->sleep       = config('mini_program.sleep');
+        $this->qrCodePath  = config('mini_program.qrcode_path');
     }
 
     public function send($entity)
