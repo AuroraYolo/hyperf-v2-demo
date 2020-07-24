@@ -8,6 +8,8 @@ return [
     'key'         => env('WECHAT_QUERY_KEY', 'channel'),
     //服务重试次数
     'maxattempts' => 2,
+    //重试间隔
+    'sleep'       => 20,
     'config'      => [
         //小程序1
         'default'  => [

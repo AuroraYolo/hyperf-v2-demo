@@ -31,7 +31,7 @@ class AuthService extends BaseService implements AuthInterface
             $session = retry($this->maxAttempts, function () use ($channel, $code)
             {
                 return $this->container->get(MiniProgramFactory::class)->get($channel)->auth->session($code);
-            }, 20);
+            }, $this->sleep);
             if (!is_array($session) || !isset($session['openid'])) {
                 throw new RuntimeException($session['errmsg'], $session['errcode']);
             }
@@ -65,7 +65,7 @@ class AuthService extends BaseService implements AuthInterface
             $decryptData = retry($this->maxAttempts, function () use ($channel, $sessionKey, $iv, $encrypted)
             {
                 return $this->container->get(MiniProgramFactory::class)->get($channel)->encryptor->decryptData($sessionKey, $iv, $encrypted);
-            }, 20);
+            }, $this->sleep);
         } catch (\Throwable $throwable) {
             $this->logger->error(sprintf("
             >>>>> 
