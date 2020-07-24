@@ -35,6 +35,11 @@ class IndexController extends Controller
 
     public function log()
     {
-        $this->logger->info('11111111');
+        //        $this->logger->info('11111111');
+        retry(2, function ()
+        {
+            echo '111111111' . "\r\n";
+            throw new \Exception('呵呵');
+        }, 10);
     }
 }

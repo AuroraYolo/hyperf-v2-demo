@@ -28,7 +28,7 @@ class AuthService extends BaseService implements AuthInterface
         $session = NULL;
         try {
             //TODO 尚未测试
-            $session = retry(1, function () use ($channel, $code)
+            $session = retry($this->maxAttempts, function () use ($channel, $code)
             {
                 return $this->container->get(MiniProgramFactory::class)->get($channel)->auth->session($code);
             }, 20);
@@ -61,7 +61,11 @@ class AuthService extends BaseService implements AuthInterface
     {
         $decryptData = NULL;
         try {
-            $decryptData = $this->container->get(MiniProgramFactory::class)->get($channel)->encryptor->decryptData($sessionKey, $iv, $encrypted);
+
+            $decryptData = retry($this->maxAttempts, function () use ($channel, $sessionKey, $iv, $encrypted)
+            {
+                return $this->container->get(MiniProgramFactory::class)->get($channel)->encryptor->decryptData($sessionKey, $iv, $encrypted);
+            }, 20);
         } catch (\Throwable $throwable) {
             $this->logger->error(sprintf("
             >>>>> 
