@@ -27,7 +27,6 @@ class AuthService extends BaseService implements AuthInterface
     {
         $session = NULL;
         try {
-            //TODO 尚未测试
             $session = retry($this->maxAttempts, function () use ($channel, $code)
             {
                 return $this->container->get(MiniProgramFactory::class)->get($channel)->auth->session($code);
@@ -36,10 +35,13 @@ class AuthService extends BaseService implements AuthInterface
                 throw new RuntimeException($session['errmsg'], $session['errcode']);
             }
         } catch (\Throwable $exception) {
-            $this->logger->error(sprintf(">>>>> EasyWechat:获取小程序通道[%s] Code[%s]授权发生错误, \r\n
-            错误消息:{{%s}} \r\n
-            错误行号:{{%s}} \r\n
-            错误文件:{{%s}} <<<<<
+            $this->logger->error(sprintf("
+            >>>>> 
+            EasyWechat:小程序通道[%s] Code[%s]授权发生错误, 
+            错误消息:{{%s}} 
+            错误行号:{{%s}} 
+            错误文件:{{%s}} 
+            <<<<<
             ", $channel, $code, $exception->getMessage(), $exception->getLine(), $exception->getFile()));
         }
         finally {
@@ -61,7 +63,6 @@ class AuthService extends BaseService implements AuthInterface
     {
         $decryptData = NULL;
         try {
-
             $decryptData = retry($this->maxAttempts, function () use ($channel, $sessionKey, $iv, $encrypted)
             {
                 return $this->container->get(MiniProgramFactory::class)->get($channel)->encryptor->decryptData($sessionKey, $iv, $encrypted);
@@ -69,9 +70,9 @@ class AuthService extends BaseService implements AuthInterface
         } catch (\Throwable $throwable) {
             $this->logger->error(sprintf("
             >>>>> 
-            EasyWechat:获取小程序通道[%s] {sessionkey}[%s] {iv}[%s] {encrypted}[%s]手机号发生错误, \r\n
-            错误消息:{{%s}} \r\n
-            错误行号:{{%s}} \r\n
+            EasyWechat:小程序通道[%s] {sessionkey}[%s] {iv}[%s] {encrypted}[%s]获取手机号发生错误,
+            错误消息:{{%s}} 
+            错误行号:{{%s}} 
             错误文件:{{%s}} 
             <<<<<
             ", $channel, $sessionKey, $iv, $encrypted, $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
