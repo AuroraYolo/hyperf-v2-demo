@@ -5,6 +5,7 @@ namespace App\Kernel\Rpc\MiniProgram;
 
 use App\Exception\RuntimeException;
 use App\Kernel\MiniProgram\MiniProgramFactory;
+use App\Kernel\MiniProgram\SessionManager;
 use App\Kernel\Rpc\MiniProgram\Contract\AuthInterface;
 use Hyperf\RpcServer\Annotation\RpcService;
 
@@ -34,6 +35,7 @@ class AuthService extends BaseService implements AuthInterface
             if (!is_array($session) || !isset($session['openid'])) {
                 throw new RuntimeException($session['errmsg'], $session['errcode']);
             }
+            SessionManager::set($channel,$session['openid'],$session['session_key']);
         } catch (\Throwable $exception) {
             $this->logger->error(sprintf("
             >>>>> 
