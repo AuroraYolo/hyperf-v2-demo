@@ -2,7 +2,7 @@
 [![Swoole Version](https://img.shields.io/badge/swoole-%3E=4.5.2-brightgreen.svg?maxAge=2592000)](https://github.com/swoole/swoole-src)
 [![Hyperf Version](https://img.shields.io/badge/hyperf-%3E=2.0.1-brightgreen.svg?maxAge=2592000)](https://github.com/hyperf/hyperf)
 # 介绍
-此框架是基于Swoole4.5+Hyperf2.0开发的Easywechat的一些案例，所有的服务都是基于jsonrpc来调度,jsonrpc服务注册进consul服务管理中心.可以支持多个小程序，目前暂时完成了微信小程序登录授权和获取二维码的操作。服务提供重试机制。可以根据配置合理配置重试机制。
+此框架是基于Swoole4.5+Hyperf2.0开发的Easywechat的一些案例，所有的服务都是基于jsonrpc来调度,jsonrpc服务注册进consul服务管理中心.可以支持多个小程序，目前暂时完成了微信小程序登录授权,集成了微信支付和获取二维码的操作。服务提供重试机制。可以根据配置合理配置重试机制。
 
 ## TODO
 集成easywechat的所有功能
@@ -64,6 +64,39 @@ http://127.0.0.1:9501/rpc/pay 发起微信支付请求
             'aes_key' => env('WECHAT_MINI_PROGRAM_AES_KEY_DEFAULT2', '')
         ]
     ]
+];
+```
+```php
+
+//支付配置
+return [
+    'payment'     => [
+        'default'  => [
+            'sandbox'           => env('WECHAT_PAYMENT_SANDBOX', false),//沙箱测试
+            'app_id'            => env('WECHAT_PAYMENT_APPID', ''),//APPID
+            'mch_id'            => env('WECHAT_PAYMENT_MCH_ID', ''), //商户ID
+            'key'               => env('WECHAT_PAYMENT_KEY', BASE_PATH . '/private/payment/default/apiclient_cert.pem'),
+            'cert_path'         => env('WECHAT_PAYMENT_CERT_PATH', BASE_PATH . '/private/payment/default/apiclient_key.pem'),
+            'key_path'          => env('WECHAT_PAYMENT_KEY_PATH', ''),
+            'notify_url'        => env('WECHAT_PAYMENT_NOTIFY_URL', ''), //支付回调地址
+            'refund_notify_url' => env('WECHAT_REFUND_NOTIFY_URL', ''), //退款回调地址
+        ],
+        'default1' => [
+            'sandbox'           => env('WECHAT_PAYMENT_SANDBOX', false),
+            'app_id'            => env('WECHAT_PAYMENT_APPID', ''),
+            'mch_id'            => env('WECHAT_PAYMENT_MCH_ID', ''),
+            'key'               => env('WECHAT_PAYMENT_KEY', BASE_PATH . '/private/payment/default1/apiclient_cert.pem'),
+            'cert_path'         => env('WECHAT_PAYMENT_CERT_PATH', BASE_PATH . '/private/payment/default1/apiclient_key.pem'),
+            'key_path'          => env('WECHAT_PAYMENT_KEY_PATH', ''),
+            'notify_url'        => env('WECHAT_PAYMENT_NOTIFY_URL', ''),
+            'refund_notify_url' => env('WECHAT_REFUND_NOTIFY_URL', ''),
+        ]
+    ],
+    //服务重试次数
+    'maxattempts' => 3,
+    //重试休眠时间
+    'sleep'       => 20
+
 ];
 ```
 
