@@ -13,6 +13,8 @@ use Hyperf\AsyncQueue\Driver\DriverFactory;
 use Hyperf\AsyncQueue\JobInterface;
 use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
 use Hyperf\Utils\ApplicationContext;
+use Hyperf\Utils\Context;
+use Psr\Http\Message\ServerRequestInterface;
 
 if (! function_exists('di')) {
     /**
@@ -51,3 +53,38 @@ if (! function_exists('queue_push')) {
         return $driver->push($job, $delay);
     }
 }
+if (!function_exists('verifyIp')) {
+    function verifyIp($realip) {
+        return filter_var($realip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+    }
+}
+if (!function_exists('getClientIp')) {
+    function getClientIp() {
+        try {
+            /**
+             * @var ServerRequestInterface $request
+             */
+            $request = Context::get(ServerRequestInterface::class);
+            $ip_addr = $request->getHeaderLine('x-forwarded-for');
+            if (verifyIp($ip_addr)) {
+                return $ip_addr;
+            }
+            $ip_addr = $request->getHeaderLine('remote-host');
+            if (verifyIp($ip_addr)) {
+                return $ip_addr;
+            }
+            $ip_addr = $request->getHeaderLine('x-real-ip');
+            if (verifyIp($ip_addr)) {
+                return $ip_addr;
+            }
+            $ip_addr = $request->getServerParams()['remote_addr'] ?? '0.0.0.0';
+            if (verifyIp($ip_addr)) {
+                return $ip_addr;
+            }
+        } catch (Throwable $e) {
+            return '0.0.0.0';
+        }
+        return '0.0.0.0';
+    }
+}
+

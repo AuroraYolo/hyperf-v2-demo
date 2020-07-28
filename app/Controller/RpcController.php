@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Kernel\MiniProgram\SessionManager;
 use App\Kernel\Rpc\MiniProgram\Contract\AuthInterface;
 use App\Kernel\Rpc\MiniProgram\Contract\QrCodeInterface;
+use App\Kernel\Rpc\Payment\Contract\OrderInterface;
+use function App\Helper\getClientIp;
 
 class RpcController extends Controller
 {
@@ -59,6 +61,22 @@ class RpcController extends Controller
         $path    = $this->request->input('path', '/pages/codeBus/pages/order/index');
         $client  = $this->container->get(QrCodeInterface::class);
         $value   = $client->getQrCode($channel, $path);
+        return $this->response->success($value);
+    }
+
+    public function pay()
+    {
+        $channel = $this->request->input('channel', 'default');
+        $client  = $this->container->get(OrderInterface::class);
+        $value   = $client->unify($channel, [
+            'body'             => '测试测试',
+            'out_trade_no'     => '2020235235235',
+            'total_fee'        => 1,
+            'spbill_create_ip' => \getClientIp(),
+            'notify_url'       => config('payment.payment.default.notify_url'),
+            'trade_type'       => 'JSAPI',
+            'openid'           => 'oLtqX5PkCnFBTw_C1WUSxDwFgB50',
+        ]);
         return $this->response->success($value);
     }
 }

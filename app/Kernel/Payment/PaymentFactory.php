@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Kernel\Payment;
 
+use App\Exception\InvalidPaymentProxyException;
 use Hyperf\Contract\ConfigInterface;
 use Psr\Container\ContainerInterface;
 
@@ -23,6 +24,20 @@ class PaymentFactory
                 'container'   => $container
             ]);
         }
+    }
+
+    /**
+     * @param string $paymentName
+     *
+     * @return PaymentProxy
+     */
+    public function get(string $paymentName = 'default') : ?PaymentProxy
+    {
+        $proxy = $this->proxies[$paymentName] ?? NULL;
+        if (!$proxy instanceof PaymentProxy) {
+            throw new InvalidPaymentProxyException('Invalid Payment proxy.');
+        }
+        return $proxy;
     }
 }
 

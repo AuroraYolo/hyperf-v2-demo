@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
 /**
  * This file is part of Hyperf.
  *
@@ -9,22 +10,23 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 use App\Kernel\Log;
 
 return [
-    'default' => [
-        'handler' => [
-            'class' => Monolog\Handler\RotatingFileHandler::class,
+    'default'     => [
+        'handler'    => [
+            'class'       => Monolog\Handler\RotatingFileHandler::class,
             'constructor' => [
                 'filename' => BASE_PATH . '/runtime/logs/hyperf.log',
-                'level' => Monolog\Logger::DEBUG,
+                'level'    => Monolog\Logger::DEBUG,
             ],
         ],
-        'formatter' => [
-            'class' => Monolog\Formatter\LineFormatter::class,
+        'formatter'  => [
+            'class'       => Monolog\Formatter\LineFormatter::class,
             'constructor' => [
-                'format' => null,
-                'dateFormat' => 'Y-m-d H:i:s',
+                'format'                => NULL,
+                'dateFormat'            => 'Y-m-d H:i:s',
                 'allowInlineLineBreaks' => true,
             ],
         ],
@@ -35,18 +37,18 @@ return [
         ],
     ],
     'miniprogram' => [
-        'handler' => [
-            'class' => Monolog\Handler\RotatingFileHandler::class,
+        'handler'    => [
+            'class'       => Monolog\Handler\RotatingFileHandler::class,
             'constructor' => [
                 'filename' => BASE_PATH . '/runtime/logs/hyperf.log',
-                'level' => Monolog\Logger::DEBUG,
+                'level'    => Monolog\Logger::DEBUG,
             ],
         ],
-        'formatter' => [
-            'class' => Monolog\Formatter\LineFormatter::class,
+        'formatter'  => [
+            'class'       => Monolog\Formatter\LineFormatter::class,
             'constructor' => [
-                'format' => null,
-                'dateFormat' => 'Y-m-d H:i:s',
+                'format'                => NULL,
+                'dateFormat'            => 'Y-m-d H:i:s',
                 'allowInlineLineBreaks' => true,
             ],
         ],
@@ -55,5 +57,28 @@ return [
                 'class' => Log\AppendRequestIdProcessor::class,
             ],
         ],
+    ],
+    'payment'     => [
+        'handler'    => [
+            'class'       => Monolog\Handler\RotatingFileHandler::class,
+            'constructor' => [
+                'filename' => BASE_PATH . '/runtime/logs/hyperf.log',
+                'level'    => Monolog\Logger::DEBUG,
+            ],
+        ],
+        'formatter'  => [
+            'class'       => Monolog\Formatter\LineFormatter::class,
+            'constructor' => [
+                'format'                => NULL,
+                'dateFormat'            => 'Y-m-d H:i:s',
+                'allowInlineLineBreaks' => true,
+            ],
+        ],
+        'processors' => [
+            [
+                'class' => Log\AppendRequestIdProcessor::class,
+            ],
+
+        ]
     ]
 ];
