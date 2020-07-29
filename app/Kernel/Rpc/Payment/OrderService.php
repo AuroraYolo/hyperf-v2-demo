@@ -21,8 +21,7 @@ class  OrderService extends BaseService implements OrderInterface
 {
     public function unify($channel, array $params, $isContract = false)
     {
-        $order  = NULL;
-        $return = NULL;
+        $return = $order = NULL;
         if (empty($params['out_trade_no']) || empty($params['total_fee'] || empty($params['openid']))) {
             throw new PaymentException('参数不正确!');
         }
@@ -43,7 +42,7 @@ class  OrderService extends BaseService implements OrderInterface
             $redisLock->unlock($key);
             if ($order['return_code'] === 'SUCCESS' && $order['return_msg'] === 'OK') {
                 // 二次验签
-                $return = [
+                $return            = [
                     'appId'     => config("payment.payment.{$channel}.app_id"),
                     'timeStamp' => time(),
                     'nonceStr'  => $order['nonce_str'],

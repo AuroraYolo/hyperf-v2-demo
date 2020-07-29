@@ -28,3 +28,9 @@ Router::addGroup('/rpc/', function ()
 }, [
     //Middleware
 ]);
+Router::addRoute(['GET', 'POST', 'HEAD'], '/metrics', function ()
+{
+    $registry = Hyperf\Utils\ApplicationContext::getContainer()->get(Prometheus\CollectorRegistry::class);
+    $renderer = new Prometheus\RenderTextFormat();
+    return $renderer->render($registry->getMetricFamilySamples());
+});

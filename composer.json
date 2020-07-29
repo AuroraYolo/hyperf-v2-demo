@@ -38,6 +38,7 @@
     "hyperf/http-server": "2.0.*",
     "hyperf/json-rpc": "^2.0",
     "hyperf/logger": "2.0.*",
+    "hyperf/metric": "^2.0",
     "hyperf/model-cache": "2.0.*",
     "hyperf/pool": "2.0.*",
     "hyperf/process": "2.0.*",
