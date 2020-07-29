@@ -10,5 +10,4 @@ vendor/
 .env
 .DS_Store
 *.lock
-./storage
 ./private
