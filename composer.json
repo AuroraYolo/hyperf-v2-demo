@@ -23,6 +23,7 @@
     "hyperf/cache": "2.0.*",
     "hyperf/command": "2.0.*",
     "hyperf/config": "2.0.*",
+    "hyperf/config-aliyun-acm": "^2.0",
     "hyperf/constants": "2.0.*",
     "hyperf/consul": "^2.0",
     "hyperf/contract": "2.0.*",
@@ -46,7 +47,9 @@
     "hyperf/rpc-server": "^2.0",
     "hyperf/server": "2.0.*",
     "hyperf/service-governance": "^2.0",
+    "hyperf/tracer": "^2.0",
     "hyperf/utils": "2.0.*",
+    "jonahgeorge/jaeger-client-php": "^0.6.0",
     "overtrue/wechat": "~4.0"
   },
   "require-dev": {

@@ -9,7 +9,11 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
+use Hyperf\Tracer\Middleware\TraceMiddleware;
+
 return [
     'http' => [
+        TraceMiddleware::class,
     ],
 ];

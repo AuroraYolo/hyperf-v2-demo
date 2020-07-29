@@ -12,12 +12,18 @@ declare(strict_types = 1);
 namespace App\Controller;
 
 use App\Kernel\MiniProgram\MiniProgramFactory;
+use Hyperf\DbConnection\Db;
+use Hyperf\Redis\RedisFactory;
+use Hyperf\Utils\Codec\Json;
 
 class IndexController extends Controller
 {
 
     public function index()
     {
+        //$redis = RedisFactory::get()->set('1111','1111111');
+        (Db::select("select * from `admin_config`"));
+//        di(RedisFactory::class)->get('default')->set('1','1');
         $user   = $this->request->input('user', 'Hyperf');
         $method = $this->request->getMethod();
         return $this->response->success([
