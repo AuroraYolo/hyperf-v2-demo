@@ -2,7 +2,7 @@
 [![Swoole Version](https://img.shields.io/badge/swoole-%3E=4.5.2-brightgreen.svg?maxAge=2592000)](https://github.com/swoole/swoole-src)
 [![Hyperf Version](https://img.shields.io/badge/hyperf-%3E=2.0.1-brightgreen.svg?maxAge=2592000)](https://github.com/hyperf/hyperf)
 # 介绍
-此框架是基于Swoole4.5+Hyperf2.0开发的Easywechat的一些案例，所有的服务都是基于jsonrpc来调度,jsonrpc服务注册进consul服务管理中心.可以支持多个小程序，目前暂时完成了微信小程序登录授权,集成了微信支付和获取二维码的操作。服务提供重试机制。可以根据配置合理配置重试机制。
+此框架是基于Swoole4.5+Hyperf2.0开发的Easywechat的一些案例，所有的服务都是基于jsonrpc来调度,jsonrpc服务注册进consul服务管理中心.可以支持多个小程序，目前暂时完成了微信小程序登录授权,集成了微信支付和获取二维码的操作。服务提供重试机制,链路追踪和服务监控。可以根据配置合理配置重试机制。
 
 ## TODO
 集成easywechat的所有功能
@@ -99,4 +99,10 @@ return [
 
 ];
 ```
+
+## 服务监控
+![avatar](./storage/0702A46032714AC6E3412C9A29C5029B.jpg)
+
+## 链路追踪
+![avatar](./storage/9A28EDE3E00DB6A665677D48D3A864B3.jpg)
 

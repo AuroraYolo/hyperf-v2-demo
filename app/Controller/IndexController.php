@@ -20,6 +20,8 @@ class IndexController extends Controller
 {
     public function index()
     {
+        di(RedisFactory::class)->get('default')->set('1','1');
+
         $user   = $this->request->input('user', 'Hyperf');
         $method = $this->request->getMethod();
         return $this->response->success([
