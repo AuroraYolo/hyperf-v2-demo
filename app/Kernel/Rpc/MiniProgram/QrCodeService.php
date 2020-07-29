@@ -23,7 +23,11 @@ class QrCodeService extends BaseService implements QrCodeInterface
      */
     public function get(string $channel, string $path, array $optional = [], string $fileName = '')
     {
-        $fileName = NULL;
+        $this->logger->debug(sprintf('>>>>> 
+            MiniProgram => QrCode => decryptData
+            Channel:小程序通道[%s] Path[%s] Optional[%s] FileName[%s]
+            <<<<<',
+            $channel, $path, Json::encode($optional), $fileName));
         try {
             $response = retry($this->maxAttempts, function () use ($channel, $path, $optional)
             {
@@ -56,7 +60,12 @@ class QrCodeService extends BaseService implements QrCodeInterface
      */
     public function getUnlimit(string $channel, string $scene, array $optional = [], string $fileName = '')
     {
-        $fileName = NULL;
+        $this->logger->debug(sprintf('>>>>> 
+            MiniProgram => QrCode => getUnlimit
+            Channel:小程序通道[%s] Scene[%s] Optional[%s] FileName[%s]
+            <<<<<',
+            $channel, $scene, Json::encode($optional), $fileName));
+        $response = NULL;
         try {
             $response = retry($this->maxAttempts, function () use ($channel, $scene, $optional)
             {
@@ -89,7 +98,12 @@ class QrCodeService extends BaseService implements QrCodeInterface
      */
     public function getQrCode(string $channel, string $path, int $width = NULL, string $fileName = '')
     {
-        $fileName = NULL;
+        $this->logger->debug(sprintf('>>>>> 
+            MiniProgram => QrCode => getQrCode
+            Channel:小程序通道[%s] Path[%s] Width[%s] FileName[%s]
+            <<<<<',
+            $channel, $path, $width, $fileName));
+        $response = NULL;
         try {
             $response = retry($this->maxAttempts, function () use ($channel, $path, $width)
             {

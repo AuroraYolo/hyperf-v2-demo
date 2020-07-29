@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 use Hyperf\Metric\Adapter\Prometheus\Constants;
-
+/*
 return [
     // To disable hyperf/metric temporarily, set default driver to noop.
     'default' => env('METRIC_DRIVER', 'prometheus'),
@@ -54,3 +54,4 @@ return [
         ],
     ],
 ];
+*/

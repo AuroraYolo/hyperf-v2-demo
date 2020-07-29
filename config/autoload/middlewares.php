@@ -15,7 +15,7 @@ use Hyperf\Tracer\Middleware\TraceMiddleware;
 
 return [
     'http' => [
-        MetricMiddleware::class,
-        TraceMiddleware::class,
+      //  MetricMiddleware::class,
+      //  TraceMiddleware::class,
     ],
 ];

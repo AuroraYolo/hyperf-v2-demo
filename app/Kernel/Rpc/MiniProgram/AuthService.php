@@ -8,6 +8,7 @@ use App\Kernel\MiniProgram\MiniProgramFactory;
 use App\Kernel\MiniProgram\SessionManager;
 use App\Kernel\Rpc\MiniProgram\Contract\AuthInterface;
 use Hyperf\RpcServer\Annotation\RpcService;
+use Hyperf\Utils\Codec\Json;
 
 /**
  * Class AuthService
@@ -26,6 +27,11 @@ class AuthService extends BaseService implements AuthInterface
      */
     public function session(string $channel, string $code)
     {
+        $this->logger->debug(sprintf('>>>>> 
+            MiniProgram => Auth => Session
+            Channel:小程序通道[%s] Code[%s]
+            <<<<<',
+            $channel, $code));
         $session = NULL;
         try {
             $session = retry($this->maxAttempts, function () use ($channel, $code)
@@ -63,6 +69,11 @@ class AuthService extends BaseService implements AuthInterface
      */
     public function decryptData(string $channel, string $sessionKey, string $iv, string $encrypted) : array
     {
+        $this->logger->debug(sprintf('>>>>> 
+            MiniProgram => Auth => decryptData
+            Channel:小程序通道[%s] SessionKey[%s] Iv[%s] Encrypted[%s]
+            <<<<<',
+            $channel, $sessionKey,$iv,$encrypted));
         $decryptData = NULL;
         try {
             $decryptData = retry($this->maxAttempts, function () use ($channel, $sessionKey, $iv, $encrypted)

@@ -21,6 +21,12 @@ class  OrderService extends BaseService implements OrderInterface
 {
     public function unify($channel, array $params, $isContract = false)
     {
+        $this->logger->debug(sprintf('>>>>> 
+            Payment => Order => unify
+            统一下单:
+            Channel:微信商户通道[%s] Params[%s]
+            <<<<<',
+            $channel, Json::encode($params)));
         $return = $order = NULL;
         if (empty($params['out_trade_no']) || empty($params['total_fee'] || empty($params['openid']))) {
             throw new PaymentException('参数不正确!');
@@ -67,13 +73,76 @@ class  OrderService extends BaseService implements OrderInterface
         }
     }
 
+    /**
+     * @param string $channel
+     * @param string $number
+     *
+     * @return mixed
+     */
     public function queryByOutTradeNumber(string $channel, string $number)
     {
-
+        $this->logger->debug(sprintf('>>>>> 
+            Payment => Order => queryByOutTradeNumber
+            统一下单:
+            Channel:微信商户通道[%s] OrderNo[%s]
+            <<<<<',
+            $channel, $number));
+        $order = NULL;
+        try {
+            //todo 用户可以在这里查询自己的订单库
+            $order = retry($this->maxAttempts, function () use ($channel, $number)
+            {
+                return $this->container->get(PaymentFactory::class)->get($channel)->order->queryByOutTradeNumber($number);
+            }, $this->sleep);
+        } catch (\Throwable $exception) {
+            $this->logger->error(sprintf("
+            >>>>> 
+            Payment:微信商户通道[%s] 查询订单[%s]发生错误, 
+            错误消息:{{%s}} 
+            错误行号:{{%s}} 
+            错误文件:{{%s}} 
+            <<<<<
+            ", $channel, $number, $exception->getMessage(), $exception->getLine(), $exception->getFile()));
+        }
+        finally {
+            return $this->send($order);
+        }
     }
 
+    /**
+     * @param string $channel
+     * @param string $transactionId
+     *
+     * @return mixed
+     */
     public function queryByTransactionId(string $channel, string $transactionId)
     {
+        $this->logger->debug(sprintf('>>>>> 
+            Payment => Order => queryByTransactionId
+            统一下单:
+            Channel:微信商户通道[%s] WechatOrderNo[%s]
+            <<<<<',
+            $channel, $transactionId));
+        $order = NULL;
+        try {
+            //todo 用户可以在这里查询自己的订单库
+            $order = retry($this->maxAttempts, function () use ($channel, $transactionId)
+            {
+                return $this->container->get(PaymentFactory::class)->get($channel)->order->queryByTransactionId($transactionId);
+            }, $this->sleep);
+        } catch (\Throwable $exception) {
+            $this->logger->error(sprintf("
+            >>>>> 
+            Payment:微信商户通道[%s] 查询订单[%s]发生错误, 
+            错误消息:{{%s}} 
+            错误行号:{{%s}} 
+            错误文件:{{%s}} 
+            <<<<<
+            ", $channel, $transactionId, $exception->getMessage(), $exception->getLine(), $exception->getFile()));
+        }
+        finally {
+            return $this->send($order);
+        }
     }
 
     public function close(string $channel, string $tradeNo)
