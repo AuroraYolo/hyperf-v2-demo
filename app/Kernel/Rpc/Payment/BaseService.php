@@ -3,9 +3,11 @@ declare(strict_types = 1);
 
 namespace App\Kernel\Rpc\Payment;
 
+use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\Logger\LoggerFactory;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 abstract class BaseService
 {
@@ -40,6 +42,27 @@ abstract class BaseService
     public function send($entity)
     {
         return $entity;
+    }
+
+    /**
+     * @param \Hyperf\HttpServer\Contract\RequestInterface $request
+     *
+     * @return \Symfony\Component\HttpFoundation\Request
+     */
+    protected function buildSymfonyRequest(RequestInterface $request) : Request
+    {
+        $get         = $request->getQueryParams();
+        $post        = $request->getParsedBody();
+        $cookie      = $request->getCookieParams();
+        $files       = $request->getUploadedFiles();
+        $server      = $request->getServerParams();
+        $uploadFiles = $request->getUploadedFiles() ?? [];
+        $xml         = $request->getBody()->getContents();
+        /** @var \Hyperf\HttpMessage\Upload\UploadedFile $v */
+        foreach ($uploadFiles as $k => $v) {
+            $files[$k] = $v->toArray();
+        }
+        return new  Request($get, $post, [], $cookie, $files, $server, $xml);
     }
 }
 

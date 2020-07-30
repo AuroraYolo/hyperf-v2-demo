@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 use App\Kernel\Rpc\MiniProgram\Contract\AuthInterface;
 use App\Kernel\Rpc\MiniProgram\Contract\QrCodeInterface;
+use App\Kernel\Rpc\Payment\Contract\NotifyInterface;
 use App\Kernel\Rpc\Payment\Contract\OrderInterface;
 
 return [
@@ -14,7 +15,8 @@ return [
         $services = [
             'AuthService'   => AuthInterface::class,
             'QrCodeService' => QrCodeInterface::class,
-            'OrderService'  => OrderInterface::class
+            'OrderService'  => OrderInterface::class,
+            'NotifyService' => NotifyInterface::class
         ];
         foreach ($services as $name => $interface) {
             $consumers[] = [

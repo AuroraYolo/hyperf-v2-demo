@@ -25,6 +25,7 @@ Router::addGroup('/rpc/', function ()
     Router::get('getUnlimitQrCode', 'App\Controller\RpcController@getUnlimitQrCode');
     Router::get('getQrCode', 'App\Controller\RpcController@getQrCode');
     Router::get('pay', 'App\Controller\RpcController@pay');
+    Router::get('notify', 'App\Controller\RpcController@notify');
 }, [
     //Middleware
 ]);

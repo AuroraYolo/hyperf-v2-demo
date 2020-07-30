@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Kernel\MiniProgram\SessionManager;
 use App\Kernel\Rpc\MiniProgram\Contract\AuthInterface;
 use App\Kernel\Rpc\MiniProgram\Contract\QrCodeInterface;
+use App\Kernel\Rpc\Payment\Contract\NotifyInterface;
 use App\Kernel\Rpc\Payment\Contract\OrderInterface;
 use function App\Helper\getClientIp;
 
@@ -78,6 +79,14 @@ class RpcController extends Controller
             'openid'           => 'oLtqX5PkCnFBTw_C1WUSxDwFgB50',
         ]);
         return $this->response->success($value);
+    }
+
+    public function notify()
+    {
+        $channel = $this->request->input('channel', 'default');
+        $client  = $this->container->get(NotifyInterface::class);
+        $value   = $client->handlePaidNotify($channel,$this->request);
+        return $this->response->toWechatXML($value->getContent());
     }
 }
 
