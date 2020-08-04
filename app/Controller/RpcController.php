@@ -7,7 +7,6 @@ use App\Kernel\Rpc\MiniProgram\Contract\AuthInterface;
 use App\Kernel\Rpc\MiniProgram\Contract\QrCodeInterface;
 use App\Kernel\Rpc\Payment\Contract\NotifyInterface;
 use App\Kernel\Rpc\Payment\Contract\OrderInterface;
-use function App\Helper\getClientIp;
 
 class RpcController extends Controller
 {
