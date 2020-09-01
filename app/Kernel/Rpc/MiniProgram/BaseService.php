@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Kernel\Rpc\MiniProgram;
 
+use App\Kernel\Rpc\Response;
 use Hyperf\Logger\LoggerFactory;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -43,9 +44,9 @@ abstract class BaseService
         $this->qrCodePath  = config('mini_program.qrcode_path');
     }
 
-    public function send($entity)
+    public function send(Response $response)
     {
-        return $entity;
+        return $response;
     }
 }
 

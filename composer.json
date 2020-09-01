@@ -51,7 +51,9 @@
     "hyperf/tracer": "^2.0",
     "hyperf/utils": "2.0.*",
     "jonahgeorge/jaeger-client-php": "^0.6.0",
-    "overtrue/wechat": "~4.0"
+    "overtrue/wechat": "~4.0",
+    "symfony/property-access": "^5.1",
+    "symfony/serializer": "^5.1"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.14",

@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace App\Kernel\Rpc\MiniProgram\Contract;
 
+use App\Kernel\Rpc\Response;
+
 interface AuthInterface
 {
     /**
@@ -11,10 +13,9 @@ interface AuthInterface
      * @param string $channel
      * @param string $code
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
-     *
+     * @return \App\Kernel\Rpc\Response
      */
-    public function session(string $channel, string $code);
+    public function session(string $channel, string $code):Response;
 
     /**
      * @param string $channel
@@ -24,7 +25,7 @@ interface AuthInterface
      *
      * @return array
      */
-    public function decryptData(string $channel, string $sessionKey, string $iv, string $encrypted) : array;
+    public function decryptData(string $channel, string $sessionKey, string $iv, string $encrypted) :Response;
 }
 
 

@@ -100,7 +100,41 @@ class NotifyService extends BaseService implements NotifyInterface
 
     public function handleRefundedNotify(string $channel, RequestInterface $request)
     {
+        $response = NULL;
+        try {
+            $symfonyRequest                                                        = $this->buildSymfonyRequest($request);
+            $this->container->get(PaymentFactory::class)->get($channel)['request'] = $symfonyRequest;
+            $response                                                              = $this->container->get(PaymentFactory::class)->get($channel)->handleRefundedNotify(function ($message, $reqInfo, $fail) use ($channel)
+            {
+                $this->logger->debug(sprintf('
+            >>>>> 
+            Payment => Notify => HandlePaidNotify
+            退款回调:
+            Channel:微信商户通道[%s] Message:[%s]
+            <<<<<
+            ', $channel, Json::encode($message)));
+                if(isset($message['return_code'])&&$message['return_code']==='SUCCESS'){
+                    if (!is_array($reqInfo) && !isset($reqInfo['out_refund_no'])) {
+                        return $fail('参数格式校验错误');
+                    }
+                    //TODO 处理回调逻辑
+                    $this->logger->info(sprintf(''));
+                }
 
+
+            });
+        } catch (\Throwable $exception) {
+            $this->logger->error(sprintf('>>>>>
+            微信退款回调错误:
+            Channel:[%s]
+            错误消息:{{%s}} 
+            错误行号:{{%s}} 
+            错误文件:{{%s}} 
+            <<<<<', $channel, $exception->getMessage(), $exception->getLine(), $exception->getFile()));
+        }
+        finally {
+            return $this->send($response instanceof Response ? $response : NULL);
+        }
     }
 
     public function handleScannedNotify(string $channel, RequestInterface $request)

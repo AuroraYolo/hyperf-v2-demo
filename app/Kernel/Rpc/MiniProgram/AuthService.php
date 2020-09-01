@@ -7,6 +7,7 @@ use App\Exception\RuntimeException;
 use App\Kernel\MiniProgram\MiniProgramFactory;
 use App\Kernel\MiniProgram\SessionManager;
 use App\Kernel\Rpc\MiniProgram\Contract\AuthInterface;
+use App\Kernel\Rpc\Response;
 use Hyperf\RpcServer\Annotation\RpcService;
 use Hyperf\Utils\Codec\Json;
 
@@ -23,16 +24,16 @@ class AuthService extends BaseService implements AuthInterface
      * @param string $channel
      * @param string $code
      *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string|void
+     * @return \App\Kernel\Rpc\Response
      */
-    public function session(string $channel, string $code)
+    public function session(string $channel, string $code) : Response
     {
         $this->logger->debug(sprintf('>>>>> 
             MiniProgram => Auth => Session
             Channel:小程序通道[%s] Code[%s]
             <<<<<',
             $channel, $code));
-        $session = NULL;
+        $response = make(Response::class);
         try {
             $session = retry($this->maxAttempts, function () use ($channel, $code)
             {
@@ -41,7 +42,10 @@ class AuthService extends BaseService implements AuthInterface
             if (!is_array($session) || !isset($session['openid'])) {
                 throw new RuntimeException($session['errmsg'], $session['errcode']);
             }
-            SessionManager::set($channel,$session['openid'],$session['session_key']);
+            SessionManager::set($channel, $session['openid'], $session['session_key']);
+            $response->code = Response::RPC_RETURN_SUCCESS_CODE;
+            $response->data = $session;
+            $response->msg  = Response::RPC_RETURN_MESSAGE_OK;
         } catch (\Throwable $exception) {
             $this->logger->error(sprintf("
             >>>>> 
@@ -51,9 +55,12 @@ class AuthService extends BaseService implements AuthInterface
             错误文件:{{%s}} 
             <<<<<
             ", $channel, $code, $exception->getMessage(), $exception->getLine(), $exception->getFile()));
+            $response->code = Response::RPC_RETURN_FAIL_CODE;
+            $response->data = [];
+            $response->msg  = $code;
         }
         finally {
-            return $this->send($session);
+            return $this->send($response);
         }
     }
 
@@ -65,21 +72,23 @@ class AuthService extends BaseService implements AuthInterface
      * @param string $iv
      * @param string $encrypted
      *
-     * @return array
+     * @return Response
      */
-    public function decryptData(string $channel, string $sessionKey, string $iv, string $encrypted) : array
+    public function decryptData(string $channel, string $sessionKey, string $iv, string $encrypted) : Response
     {
         $this->logger->debug(sprintf('>>>>> 
             MiniProgram => Auth => decryptData
             Channel:小程序通道[%s] SessionKey[%s] Iv[%s] Encrypted[%s]
             <<<<<',
-            $channel, $sessionKey,$iv,$encrypted));
-        $decryptData = NULL;
+            $channel, $sessionKey, $iv, $encrypted));
+        $response = make(Response::class);
         try {
-            $decryptData = retry($this->maxAttempts, function () use ($channel, $sessionKey, $iv, $encrypted)
+            $decryptData    = retry($this->maxAttempts, function () use ($channel, $sessionKey, $iv, $encrypted)
             {
                 return $this->container->get(MiniProgramFactory::class)->get($channel)->encryptor->decryptData($sessionKey, $iv, $encrypted);
             }, $this->sleep);
+            $response->code = Response::RPC_RETURN_SUCCESS_CODE;
+            $response->data = $decryptData;
         } catch (\Throwable $throwable) {
             $this->logger->error(sprintf("
             >>>>> 
@@ -89,9 +98,12 @@ class AuthService extends BaseService implements AuthInterface
             错误文件:{{%s}} 
             <<<<<
             ", $channel, $sessionKey, $iv, $encrypted, $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
+            $response->code = Response::RPC_RETURN_FAIL_CODE;
+            $response->data = [];
+            $response->msg  = $throwable->getCode();
         }
         finally {
-            return $this->send($decryptData);
+            return $this->send($response);
         }
     }
 }
