@@ -43,9 +43,9 @@ class AuthService extends BaseService implements AuthInterface
                 throw new RuntimeException($session['errmsg'], $session['errcode']);
             }
             SessionManager::set($channel, $session['openid'], $session['session_key']);
-            $response->code = Response::RPC_RETURN_SUCCESS_CODE;
-            $response->data = $session;
-            $response->msg  = Response::RPC_RETURN_MESSAGE_OK;
+            $response->setCode(Response::RPC_RETURN_SUCCESS_CODE);
+            $response->setData($session);
+            $response->setMsg(Response::RPC_RETURN_MESSAGE_OK);
         } catch (\Throwable $exception) {
             $this->logger->error(sprintf("
             >>>>> 
@@ -55,9 +55,9 @@ class AuthService extends BaseService implements AuthInterface
             错误文件:{{%s}} 
             <<<<<
             ", $channel, $code, $exception->getMessage(), $exception->getLine(), $exception->getFile()));
-            $response->code = Response::RPC_RETURN_FAIL_CODE;
-            $response->data = [];
-            $response->msg  = $code;
+            $response->setCode(Response::RPC_RETURN_FAIL_CODE);
+            $response->setData([]);
+            $response->setMsg($exception->getMessage());
         }
         finally {
             return $this->send($response);
@@ -83,12 +83,13 @@ class AuthService extends BaseService implements AuthInterface
             $channel, $sessionKey, $iv, $encrypted));
         $response = make(Response::class);
         try {
-            $decryptData    = retry($this->maxAttempts, function () use ($channel, $sessionKey, $iv, $encrypted)
+            $decryptData = retry($this->maxAttempts, function () use ($channel, $sessionKey, $iv, $encrypted)
             {
                 return $this->container->get(MiniProgramFactory::class)->get($channel)->encryptor->decryptData($sessionKey, $iv, $encrypted);
             }, $this->sleep);
-            $response->code = Response::RPC_RETURN_SUCCESS_CODE;
-            $response->data = $decryptData;
+            $response->setCode(Response::RPC_RETURN_SUCCESS_CODE);
+            $response->setData($decryptData);
+            $response->setMsg(Response::RPC_RETURN_MESSAGE_OK);
         } catch (\Throwable $throwable) {
             $this->logger->error(sprintf("
             >>>>> 
@@ -98,9 +99,9 @@ class AuthService extends BaseService implements AuthInterface
             错误文件:{{%s}} 
             <<<<<
             ", $channel, $sessionKey, $iv, $encrypted, $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
-            $response->code = Response::RPC_RETURN_FAIL_CODE;
-            $response->data = [];
-            $response->msg  = $throwable->getCode();
+            $response->setCode(Response::RPC_RETURN_FAIL_CODE);
+            $response->setData([]);
+            $response->setMsg($throwable->getMessage());
         }
         finally {
             return $this->send($response);
